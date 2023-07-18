@@ -11,22 +11,17 @@ use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Session\MetadataBag;
 use Drupal\Core\Session\UserSession;
-use Drupal\Core\Session\SessionConfigurationInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\touring_wizard\Entity\WizardJourney;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\iframe_helper\Entity\ParamSession;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
-use Symfony\Component\HttpKernel\Event\ResponseEvent;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * URL-based authentication provider.
  */
 class UrlParameters implements AuthenticationProviderInterface {
 
-  const PARAMNAME = 'jrnSession';
+  const PARAMNAME = 'iSession';
 
   use StringTranslationTrait;
 
@@ -74,7 +69,7 @@ class UrlParameters implements AuthenticationProviderInterface {
    * Check validity of URL parameter.
    *
    * Parameter should be passed in the form uuid:secret,
-   * and secret should match appropriate value in wizard_journey table.
+   * and secret should match appropriate value in iframe_session table.
    *
    * @param string $param
    *   Parameter in format uuid:secret.
@@ -87,7 +82,7 @@ class UrlParameters implements AuthenticationProviderInterface {
     if (!$secret) {
       return FALSE;
     }
-    return !empty($this->getJourney($uuid, $secret));
+    return !empty($this->getSession($uuid, $secret));
   }
 
   /**
@@ -95,12 +90,12 @@ class UrlParameters implements AuthenticationProviderInterface {
    */
   public function authenticate(Request $request) {
     [$uuid, $secret] = explode(':', $request->query->get(self::PARAMNAME), 2);
-    $journey = $this->getJourney($uuid, $secret);
-    if (!$journey instanceof WizardJourney) {
+    $session = $this->getSession($uuid, $secret);
+    if (!$session instanceof ParamSession) {
       return NULL;
     }
     // Taken from core's Cookie::getUserFromSession()
-    $uid = $journey->getOwnerId();
+    $uid = $session->getOwnerId();
     if (!$uid) {
       return NULL;
     }
@@ -120,8 +115,8 @@ class UrlParameters implements AuthenticationProviderInterface {
       ->query('SELECT [roles_target_id] FROM {user__roles} WHERE [entity_id] = :uid', [':uid' => $values['uid']])
       ->fetchCol();
     $values['roles'] = array_merge([AccountInterface::AUTHENTICATED_ROLE], $rids);
-    $values[self::PARAMNAME] = $journey;
-    $this->metadataBag->setCsrfTokenSeed($journey->get('session_key')->value);
+    $values[self::PARAMNAME] = $session;
+    $this->metadataBag->setCsrfTokenSeed($session->get('session_key')->value);
 
     return new UserSession($values);
   }
@@ -161,19 +156,20 @@ class UrlParameters implements AuthenticationProviderInterface {
   }
 
   /**
-   * Get journey entity from its uuid and secret.
+   * Get session entity from its uuid and secret.
    *
    * @param string $uuid
-   *   Journey UUID.
+   *   session UUID.
    * @param string $key
-   *   Journey key.
+   *   session key.
    *
-   * @return \Drupal\touring_wizard\Authentication\Provider\WizardJourney|null
+   * @return \Drupal\iframe_helper\Entity\ParamSession|null
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  protected function getJourney(string $uuid, string $key) : ?WizardJourney {
-    $match = $this->entityTypeManager->getStorage('wizard_journey')
+  protected function getSession(string $uuid, string $key) : ?ParamSession {
+    $match = $this->entityTypeManager->getStorage('iframe_session')
       ->loadByProperties(['uuid' => $uuid]);
     if (!$match) {
       return NULL;

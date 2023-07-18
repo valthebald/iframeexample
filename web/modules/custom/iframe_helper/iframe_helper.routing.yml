@@ -5,3 +5,13 @@ iframe_helper.allowed_iframes:
     _title: 'Allowed iFrame referers'
   requirements:
     _permission: 'administer site configuration'
+
+iframe_helper.login:
+  path: '/user/loginAlternate'
+  defaults:
+    _form: '\Drupal\iframe_helper\Form\LoginAlternate'
+    _title: 'Log in'
+  requirements:
+    _user_is_logged_in: 'FALSE'
+  options:
+    _maintenance_access: TRUE

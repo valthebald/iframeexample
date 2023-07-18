@@ -10,7 +10,7 @@ services:
     tags:
       # global tag allows provider to apply to all routes.
       # Alternative is to implement AuthenticationProviderFilterInterface.
-      - { name: authentication_provider, provider_id: 'journey_url', priority: 10, global: TRUE }
+      - { name: authentication_provider, provider_id: 'url_param', priority: 10, global: TRUE }
 
   iframe_helper.iframe_event_subscriber:
     class: Drupal\iframe_helper\EventSubscriber\AllowIframeSubscriber

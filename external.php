@@ -5,6 +5,6 @@
   <title>iFrame test</title>
 </head>
 <body>
- <iframe src="http://iframeexample.docker.localhost:81/" width="700" height="600"></iframe>
+ <iframe src="http://iframeexample.docker.localhost:81/user/loginAlternate" width="700" height="600"></iframe>
 </body>
 </html>
