@@ -1,0 +1,7 @@
+iframe_helper.allowed_iframes:
+  path: '/admin/config/services/allowed-iframes'
+  defaults:
+    _form: 'Drupal\iframe_helper\Form\AllowedFrameReferers'
+    _title: 'Allowed iFrame referers'
+  requirements:
+    _permission: 'administer site configuration'

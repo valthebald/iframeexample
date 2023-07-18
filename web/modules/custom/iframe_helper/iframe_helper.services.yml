@@ -1,7 +1,19 @@
-iframe_helper.authentication.url_params:
-  class: Drupal\touring_wizard\Authentication\Provider\JourneyUrl
-  arguments: ['@database', '@entity_type.manager', '@session_manager.metadata_bag']
-  tags:
-    # global tag allows provider to apply to all routes.
-    # Alternative is to implement AuthenticationProviderFilterInterface.
-    - { name: authentication_provider, provider_id: 'journey_url', priority: 10, global: TRUE }
+services:
+  cache_context.referer:
+    class: Drupal\iframe_helper\Cache\Context\RefererCacheContext
+    arguments: ['@request_stack']
+    tags:
+      - { name: cache.context}
+  iframe_helper.authentication.url_params:
+    class: Drupal\iframe_helper\Authentication\Provider\UrlParameters
+    arguments: ['@database', '@entity_type.manager', '@session_manager.metadata_bag']
+    tags:
+      # global tag allows provider to apply to all routes.
+      # Alternative is to implement AuthenticationProviderFilterInterface.
+      - { name: authentication_provider, provider_id: 'journey_url', priority: 10, global: TRUE }
+
+  iframe_helper.iframe_event_subscriber:
+    class: Drupal\iframe_helper\EventSubscriber\AllowIframeSubscriber
+    arguments: ['@current_route_match', '@config.factory']
+    tags:
+      - { name: event_subscriber }

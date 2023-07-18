@@ -1,0 +1,4 @@
+.docker-data
+vendor
+web/core
+web/modules/contrib

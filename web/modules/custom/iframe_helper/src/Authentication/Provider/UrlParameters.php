@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\touring_wizard\Authentication\Provider;
+namespace Drupal\iframe_helper\Authentication\Provider;
 
 use Drupal\Core\Authentication\AuthenticationProviderInterface;
 use Drupal\Core\Database\Connection;

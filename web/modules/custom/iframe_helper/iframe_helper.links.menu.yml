@@ -1,0 +1,5 @@
+iframe_helper.allowed_iframes:
+  title: 'Allowed iFrame referers'
+  description: 'Allow the sites that can include this site in an iFrame.'
+  route_name: iframe_helper.allowed_iframes
+  parent: system.admin_config_services
