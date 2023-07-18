@@ -1,0 +1,7 @@
+name: 'iFrame helper'
+type: module
+description: 'Allows Drupal to be open in an iframe'
+core_version_requirement: ^8.9 || ^9 || ^10
+package: 'Examples'
+dependencies:
+  drupal:user
